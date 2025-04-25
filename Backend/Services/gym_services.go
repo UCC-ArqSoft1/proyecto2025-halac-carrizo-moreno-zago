@@ -2,36 +2,7 @@ package services
 
 import "backend/domain"
 
-func GetActivityById(id string) domain.Activity {
-	activity := domain.Activity{
-		ID:          id,
-		Title:       "Spinning Avanzado",
-		Category:    "Spinning",
-		Day:         "Martes",
-		Time:        "18:00",
-		Duration:    60,
-		Instructor:  "Juan Pérez",
-		Capacity:    20,
-		Description: "Clase de spinning de alta intensidad",
-		ImageURL:    "https://example.com/spinning.jpg",
-	}
-	return activity
-}
-
-func GetUserById(id string) domain.Person {
-	user := domain.Person{
-		ID:          id,
-		Name:        "Lucía Gómez",
-		Age:         30,
-		DateOfBirth: domain.Date{Day: 15, Month: 6, Year: 1993},
-		Role:        "socio",
-		DNI:         "40123456",
-		Mail:        "lucia@example.com",
-		Phone:       "1123456789",
-	}
-	return user
-}
-
+// GetGym - Retorna la información del gimnasio con sus actividades, entrenadores y clientes
 func GetGym() domain.Gym {
 	location := domain.Location{
 		Country: "Argentina",
@@ -41,88 +12,177 @@ func GetGym() domain.Gym {
 		ZipCode: "1000",
 	}
 
-	gym := domain.Gym{
-		ID:       "1",
-		Name:     "Gimnasio Energía",
-		Location: location,
-		Trainers: []domain.Person{GetUserById("trainer1")},
-		Clients:  []domain.Person{GetUserById("client1")},
-		Activities: []domain.Activity{
-			GetActivityById("a1"),
+	trainers := []domain.Person{
+		{
+			ID:          "trainer1",
+			Name:        "Juan Pérez",
+			Age:         35,
+			DateOfBirth: domain.Date{Day: 15, Month: 6, Year: 1988},
+			Role:        "trainer",
+			DNI:         "12345678",
+			Mail:        "juan@example.com",
+			Phone:       "1122334455",
 		},
 	}
+
+	clients := []domain.Person{
+		{
+			ID:          "client1",
+			Name:        "Lucía Gómez",
+			Age:         30,
+			DateOfBirth: domain.Date{Day: 15, Month: 6, Year: 1993},
+			Role:        "client",
+			DNI:         "40123456",
+			Mail:        "lucia@example.com",
+			Phone:       "1123456789",
+		},
+	}
+
+	activities := []domain.Activity{
+		{
+			ID:        "a1",
+			Name:      "Spinning Avanzado",
+			Duration:  60,
+			Intensity: "high",
+			TrainerID: "trainer1",
+			Schedule: []domain.Schedule{
+				{
+					DayOfWeek: "Monday",
+					StartTime: "18:00",
+					EndTime:   "19:00",
+				},
+				{
+					DayOfWeek: "Wednesday",
+					StartTime: "18:00",
+					EndTime:   "19:00",
+				},
+			},
+		},
+	}
+
+	gym := domain.Gym{
+		ID:         "1",
+		Name:       "Gimnasio Energía",
+		Location:   location,
+		Trainers:   trainers,
+		Clients:    clients,
+		Activities: activities,
+	}
+
 	return gym
 }
 
-func GetSchedule() domain.Schedule {
-	return domain.Schedule{
-		DayOfWeek: "Lunes",
-		StartTime: "09:00",
-		EndTime:   "10:00",
-	}
-}
-
-func GetMembershipById(id string) domain.Membership {
-	return domain.Membership{
-		ID:             id,
-		Name:           "Plan Mensual",
-		Price:          15000.00,
-		DurationInDays: 30,
-		AccessLevel:    "Total",
-	}
-}
-
-func GetReservationById(id string) domain.Reservation {
-	return domain.Reservation{
-		ID:         id,
-		ClientID:   "client1",
-		ActivityID: "a1",
-		Date:       domain.Date{Day: 25, Month: 4, Year: 2025},
-		Status:     "confirmed",
-	}
-}
-
-func GetAttendanceById(id string) domain.Attendance {
-	return domain.Attendance{
-		ID:       id,
-		PersonID: "client1",
-		Date:     domain.Date{Day: 24, Month: 4, Year: 2025},
-		CheckIn:  "10:00",
-		CheckOut: "11:15",
-	}
-}
-
-func GetPaymentById(id string) domain.Payment {
-	return domain.Payment{
-		ID:           id,
-		ClientID:     "client1",
-		MembershipID: "m1",
-		Amount:       15000.00,
-		Date:         domain.Date{Day: 1, Month: 4, Year: 2025},
-		Method:       "credit card",
-	}
-}
-
-func GetWorkoutRoutineById(id string) domain.WorkoutRoutine {
-	exercises := []domain.Exercise{
-		{Name: "Sentadillas", Reps: 12, Sets: 4, RestTime: 60, MuscleGroup: "Piernas"},
-		{Name: "Press de banca", Reps: 10, Sets: 4, RestTime: 90, MuscleGroup: "Pecho"},
-	}
-
-	return domain.WorkoutRoutine{
+// GetActivityById - Obtiene una actividad por su ID
+func GetActivityById(id string) domain.Activity {
+	activity := domain.Activity{
 		ID:        id,
-		ClientID:  "client1",
+		Name:      "Spinning Avanzado",
+		Duration:  60,
+		Intensity: "high",
 		TrainerID: "trainer1",
-		Name:      "Rutina Fuerza Básica",
-		Exercises: exercises,
+		Schedule: []domain.Schedule{
+			{
+				DayOfWeek: "Monday",
+				StartTime: "18:00",
+				EndTime:   "19:00",
+			},
+			{
+				DayOfWeek: "Wednesday",
+				StartTime: "18:00",
+				EndTime:   "19:00",
+			},
+		},
 	}
+	return activity
 }
 
-func GetEquipmentById(id string) domain.Equipment {
-	return domain.Equipment{
-		ID:       id,
-		Name:     "Bicicleta Estática",
-		Quantity: 10,
-		Status:   "available",
+// GetPersonById - Obtiene la información de una persona (cliente o entrenador) por su ID
+func GetPersonById(id string) domain.Person {
+	// Este sería un ejemplo simple, pero en una implementación real buscaríamos en una base de datos
+	person := domain.Person{
+		ID:          id,
+		Name:        "Lucía Gómez",
+		Age:         30,
+		DateOfBirth: domain.Date{Day: 15, Month: 6, Year: 1993},
+		Role:        "client",
+		DNI:         "40123456",
+		Mail:        "lucia@example.com",
+		Phone:       "1123456789",
 	}
+	return person
+}
+
+// GetTrainerById - Obtiene un entrenador por su ID
+func GetTrainerById(id string) domain.Person {
+	trainer := domain.Person{
+		ID:          id,
+		Name:        "Juan Pérez",
+		Age:         35,
+		DateOfBirth: domain.Date{Day: 15, Month: 6, Year: 1988},
+		Role:        "trainer",
+		DNI:         "12345678",
+		Mail:        "juan@example.com",
+		Phone:       "1122334455",
+	}
+	return trainer
+}
+
+// GetClientById - Obtiene un cliente por su ID
+func GetClientById(id string) domain.Person {
+	client := domain.Person{
+		ID:          id,
+		Name:        "Lucía Gómez",
+		Age:         30,
+		DateOfBirth: domain.Date{Day: 15, Month: 6, Year: 1993},
+		Role:        "client",
+		DNI:         "40123456",
+		Mail:        "lucia@example.com",
+		Phone:       "1123456789",
+	}
+	return client
+}
+
+// GetScheduleForActivity - Obtiene el horario para una actividad por su ID
+func GetScheduleForActivity(id string) []domain.Schedule {
+	// Simulación de datos; en una base de datos real, se buscarían los horarios de la actividad
+	schedule := []domain.Schedule{
+		{
+			DayOfWeek: "Monday",
+			StartTime: "18:00",
+			EndTime:   "19:00",
+		},
+		{
+			DayOfWeek: "Wednesday",
+			StartTime: "18:00",
+			EndTime:   "19:00",
+		},
+	}
+	return schedule
+}
+
+// GetActivitiesForTrainer - Obtiene las actividades de un entrenador por su ID
+func GetActivitiesForTrainer(trainerId string) []domain.Activity {
+	// Simulación de datos; se deben recuperar las actividades asociadas al entrenador
+	activities := []domain.Activity{
+		{
+			ID:        "a1",
+			Name:      "Spinning Avanzado",
+			Duration:  60,
+			Intensity: "high",
+			TrainerID: trainerId,
+			Schedule: []domain.Schedule{
+				{
+					DayOfWeek: "Monday",
+					StartTime: "18:00",
+					EndTime:   "19:00",
+				},
+				{
+					DayOfWeek: "Wednesday",
+					StartTime: "18:00",
+					EndTime:   "19:00",
+				},
+			},
+		},
+	}
+	return activities
 }
