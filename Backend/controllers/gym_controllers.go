@@ -33,7 +33,7 @@ func GetActivities(c *gin.Context) {
 // RegisterForActivity - Endpoint para inscribirse en una actividad
 func RegisterForActivity(c *gin.Context) {
 	id := c.Param("id")
-	user := services.GetUserById("client1") // Debería ser el usuario real en sesión
+	user := services.GetClientById("client1") // Debería ser el usuario real en sesión
 	activity := services.GetActivityById(id)
 
 	// Aquí debería implementarse la lógica para registrar al usuario en la actividad
@@ -48,7 +48,7 @@ func RegisterForActivity(c *gin.Context) {
 // GetUserActivities - Endpoint para obtener las actividades de un usuario
 func GetUserActivities(c *gin.Context) {
 	// Aquí se debería obtener el usuario desde el JWT, por ahora usamos un ejemplo estático
-	user := services.GetUserById("client1")
+	user := services.GetClientById("client1")
 	activities := []domain.Activity{
 		services.GetActivityById("a1"), // Aquí deben ir las actividades que el usuario tenga registradas
 	}
