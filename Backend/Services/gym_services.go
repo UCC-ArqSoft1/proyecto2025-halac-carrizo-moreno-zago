@@ -72,29 +72,7 @@ func GetGym() domain.Gym {
 	return gym
 }
 
-// GetActivityById - Obtiene una actividad por su ID
-func GetActivityById(id string) domain.Activity {
-	activity := domain.Activity{
-		ID:        id,
-		Name:      "Spinning Avanzado",
-		Duration:  60,
-		Intensity: "high",
-		TrainerID: "trainer1",
-		Schedule: []domain.Schedule{
-			{
-				DayOfWeek: "Monday",
-				StartTime: "18:00",
-				EndTime:   "19:00",
-			},
-			{
-				DayOfWeek: "Wednesday",
-				StartTime: "18:00",
-				EndTime:   "19:00",
-			},
-		},
-	}
-	return activity
-}
+
 
 // GetPersonById - Obtiene la información de una persona (cliente o entrenador) por su ID
 func GetPersonById(id string) domain.Person {

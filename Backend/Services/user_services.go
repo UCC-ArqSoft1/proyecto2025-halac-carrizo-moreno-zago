@@ -2,17 +2,36 @@ package services
 
 import (
 	"backend/clients"
-	"fmt"
+	"errors"
+	"time"
+
+	"golang.org/x/crypto/bcrypt"
+	"github.com/golang-jwt/jwt/v5"
 )
 
-func Login(username string, password string) {
-	//Get the user from the database
+var jwtSecret = []byte("mi_clave_secreta_super_segura")
+
+func Login(username string, password string) (string, error) {
 	user := clients.GetUserByUsername(username)
-	fmt.Println("Usuario Obtenido: ", user)
+	if user.Username == "" {
+		return "", errors.New("usuario no encontrado")
+	}
 
-	//Hash the password
+	err := bcrypt.CompareHashAndPassword([]byte(user.PasswordHash), []byte(password))
+	if err != nil {
+		return "", errors.New("contraseña incorrecta")
+	}
 
-	//Compare the hashed password with the stored password
+	// Generar el JWT token
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
+		"user_id": user.ID,
+		"exp":     time.Now().Add(24 * time.Hour).Unix(),
+	})
 
-	//If they match, generate a JWT token
+	tokenString, err := token.SignedString(jwtSecret)
+	if err != nil {
+		return "", err
+	}
+
+	return tokenString, nil
 }
