@@ -30,29 +30,24 @@ func GetActivities(c *gin.Context) {
 // RegisterForActivity - Endpoint para inscribirse en una actividad
 func RegisterForActivity(c *gin.Context) {
 	id := c.Param("id")
-	user := services.GetClientById("client1") // En el futuro: extraer desde el JWT
-	activity := services.GetActivityById(id)
+	user := services.GetClientById("client1") // simulación, en producción usar JWT
 
-	// Simulación de inscripción
+	activity := services.GetActivityById(id)
+	if activity.ID == "" {
+		c.JSON(http.StatusNotFound, gin.H{"error": "Actividad no encontrada"})
+		return
+	}
+
+	services.RegisterUserToActivity(user.ID, id)
+
 	c.JSON(http.StatusOK, gin.H{
 		"message":  "Registrado con éxito",
 		"activity": activity,
 		"user":     user,
-		"status":   "registered",
 	})
 }
 
-// GetUserActivities - Endpoint para obtener las actividades de un usuario
-func GetUserActivities(c *gin.Context) {
-	user := services.GetClientById("client1")
-	activities := []domain.Activity{
-		services.GetActivityById("a1"), // En el futuro: recuperar actividades registradas del usuario
-	}
-	c.JSON(http.StatusOK, gin.H{
-		"user":       user,
-		"activities": activities,
-	})
-}
+
 
 // AdminCreateActivity - Endpoint para que el administrador cree una actividad
 func AdminCreateActivity(c *gin.Context) {

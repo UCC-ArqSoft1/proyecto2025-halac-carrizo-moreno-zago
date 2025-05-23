@@ -20,17 +20,18 @@ type Location struct {
 type Activity struct {
 	ID        string     `json:"id"`
 	Name      string     `json:"name"`
-	Duration  int        // in minutes
-	Intensity string     // low, medium, high
+	Duration  int        `json:"duration"`
+	Intensity string     `json:"intensity"`
 	TrainerID string     `json:"trainer_id"`
 	Schedule  []Schedule `json:"schedule"`
-}
+  }
+  
 
-type Schedule struct {
-	DayOfWeek string // e.g. "Monday"
-	StartTime string // "15:00"
-	EndTime   string // "16:00"
-}
+  type Schedule struct {
+	DayOfWeek string `json:"day_of_week"`
+	StartTime string `json:"start_time"`
+	EndTime   string `json:"end_time"`
+  }
 
 type Person struct {
 	ID          string
@@ -47,4 +48,10 @@ type Date struct {
 	Day   int
 	Month int
 	Year  int
+}
+
+
+type Inscription struct {
+	UserID     string `json:"user_id"`
+	ActivityID string `json:"activity_id"`
 }

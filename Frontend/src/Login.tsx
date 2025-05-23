@@ -13,9 +13,7 @@ export default function Login() {
     try {
       const res = await fetch("http://localhost:3000/login", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ username, password }),
       });
 
@@ -27,7 +25,6 @@ export default function Login() {
       }
 
       localStorage.setItem("token", data.token);
-      alert("Login exitoso");
       window.location.href = "/dashboard";
     } catch (err) {
       setErrorMsg("Error al conectar con el servidor");
