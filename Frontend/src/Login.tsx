@@ -1,10 +1,14 @@
+// Login.tsx
+
 import { useState } from "react";
 import "./Login.css";
+import { useNavigate } from "react-router-dom";
 
 export default function Login() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [errorMsg, setErrorMsg] = useState("");
+  const navigate = useNavigate();
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -14,6 +18,7 @@ export default function Login() {
       const res = await fetch("http://localhost:3000/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+        credentials: "include",          // <— aquí también incluimos las cookies
         body: JSON.stringify({ username, password }),
       });
 
@@ -24,10 +29,11 @@ export default function Login() {
         return;
       }
 
-      localStorage.setItem("token", data.token);
-      window.location.href = "/dashboard";
+      // Ya guardamos la cookie “token” desde el backend, no usar localStorage.
+      navigate("/dashboard"); // redirigimos a Dashboard
     } catch (err) {
-      setErrorMsg("Error al conectar con el servidor");
+      console.error("Error al conectar con el servidor:", err);
+      setErrorMsg("Error de conexión con el servidor");
     }
   };
 
@@ -35,7 +41,7 @@ export default function Login() {
     <div className="login-container">
       <form className="login-form" onSubmit={handleLogin}>
         <h2>Iniciar Sesión</h2>
-        {errorMsg && <p className="error">{errorMsg}</p>}
+        {errorMsg && <p className="error">🔴 {errorMsg}</p>}
         <input
           type="text"
           placeholder="Usuario"
@@ -50,7 +56,20 @@ export default function Login() {
           onChange={(e) => setPassword(e.target.value)}
           required
         />
-        <button type="submit">Ingresar</button>
+        <button
+          type="submit"
+          style={{
+            padding: "0.7rem",
+            borderRadius: "4px",
+            border: "none",
+            background: "#2193b0",
+            color: "#fff",
+            fontWeight: 600,
+            cursor: "pointer",
+          }}
+        >
+          Ingresar
+        </button>
       </form>
     </div>
   );

@@ -37,9 +37,9 @@ type Person struct {
 	ID          string
 	Name        string
 	Age         int
+	DNI 		string
 	DateOfBirth Date
-	Role        string // "trainer", "client", etc.
-	DNI         string
+	Role        string // "trainer", "client"
 	Mail        string
 	Phone       string
 }

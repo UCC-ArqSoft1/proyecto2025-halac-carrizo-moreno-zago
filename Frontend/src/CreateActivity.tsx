@@ -15,6 +15,7 @@ export default function CreateActivity() {
       },
     ],
   });
+  const [error, setError] = useState<string>("");
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -31,37 +32,53 @@ export default function CreateActivity() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const res = await fetch("http://localhost:3000/activities", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(activity),
-    });
+    setError("");
 
-    if (res.ok) {
-      alert("Actividad creada con éxito");
-      setActivity({
-        id: "",
-        name: "",
-        duration: 0,
-        intensity: "",
-        trainer_id: "",
-        schedule: [{ day_of_week: "", start_time: "", end_time: "" }],
+    try {
+      const res = await fetch("http://localhost:3000/activities", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include", // <— enviamos la cookie con el JWT
+        body: JSON.stringify(activity),
       });
-    } else {
-      alert("Error al crear actividad");
+
+      if (res.status === 401) {
+        alert("No estás autorizado. Inicia sesión como admin.");
+        return;
+      }
+
+      if (res.ok) {
+        alert("Actividad creada con éxito");
+        setActivity({
+          id: "",
+          name: "",
+          duration: 0,
+          intensity: "",
+          trainer_id: "",
+          schedule: [{ day_of_week: "", start_time: "", end_time: "" }],
+        });
+      } else {
+        const errData = await res.json();
+        setError(errData.error || "Error al crear actividad");
+      }
+    } catch (err: any) {
+      console.error("❌ Error al crear actividad:", err);
+      setError("Error de conexión con el servidor");
     }
   };
 
   return (
-    <div style={{
-      display: "flex",
-      justifyContent: "center",
-      alignItems: "center",
-      minHeight: "100vh",
-      width: "100vw",
-      background: "linear-gradient(135deg, #74ebd5, #9face6)",
-      fontFamily: `"Segoe UI", Tahoma, Geneva, Verdana, sans-serif`
-    }}>
+    <div
+      style={{
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        minHeight: "100vh",
+        width: "100vw",
+        background: "linear-gradient(135deg, #74ebd5, #9face6)",
+        fontFamily: `"Segoe UI", Tahoma, Geneva, Verdana, sans-serif`,
+      }}
+    >
       <form
         onSubmit={handleSubmit}
         style={{
@@ -73,24 +90,74 @@ export default function CreateActivity() {
           maxWidth: 360,
           display: "flex",
           flexDirection: "column",
-          gap: "1.2rem"
+          gap: "1.2rem",
         }}
       >
         <h2 style={{ textAlign: "center", color: "#333" }}>Crear Actividad</h2>
-        <input name="id" placeholder="ID" value={activity.id} onChange={handleChange} required />
-        <input name="name" placeholder="Nombre" value={activity.name} onChange={handleChange} required />
-        <input name="duration" type="number" placeholder="Duración (min)" value={activity.duration} onChange={handleChange} required />
-        <select name="intensity" value={activity.intensity} onChange={handleChange} required>
+        {error && <p style={{ color: "red" }}>🔴 {error}</p>}
+        <input
+          name="id"
+          placeholder="ID"
+          value={activity.id}
+          onChange={handleChange}
+          required
+        />
+        <input
+          name="name"
+          placeholder="Nombre"
+          value={activity.name}
+          onChange={handleChange}
+          required
+        />
+        <input
+          name="duration"
+          type="number"
+          placeholder="Duración (min)"
+          value={activity.duration}
+          onChange={handleChange}
+          required
+        />
+        <select
+          name="intensity"
+          value={activity.intensity}
+          onChange={handleChange}
+          required
+        >
           <option value="">Intensidad</option>
           <option value="low">Baja</option>
           <option value="medium">Media</option>
           <option value="high">Alta</option>
         </select>
-        <input name="trainer_id" placeholder="ID del entrenador" value={activity.trainer_id} onChange={handleChange} required />
-        <input name="day_of_week" placeholder="Día de la semana" value={activity.schedule[0].day_of_week} onChange={handleScheduleChange} required />
-        <input name="start_time" placeholder="Hora de inicio (HH:MM)" value={activity.schedule[0].start_time} onChange={handleScheduleChange} required />
-        <input name="end_time" placeholder="Hora de fin (HH:MM)" value={activity.schedule[0].end_time} onChange={handleScheduleChange} required />
-        <button type="submit"
+        <input
+          name="trainer_id"
+          placeholder="ID del entrenador"
+          value={activity.trainer_id}
+          onChange={handleChange}
+          required
+        />
+        <input
+          name="day_of_week"
+          placeholder="Día de la semana"
+          value={activity.schedule[0].day_of_week}
+          onChange={handleScheduleChange}
+          required
+        />
+        <input
+          name="start_time"
+          placeholder="Hora de inicio (HH:MM)"
+          value={activity.schedule[0].start_time}
+          onChange={handleScheduleChange}
+          required
+        />
+        <input
+          name="end_time"
+          placeholder="Hora de fin (HH:MM)"
+          value={activity.schedule[0].end_time}
+          onChange={handleScheduleChange}
+          required
+        />
+        <button
+          type="submit"
           style={{
             background: "linear-gradient(135deg, #74ebd5, #9face6)",
             color: "white",
@@ -99,9 +166,11 @@ export default function CreateActivity() {
             borderRadius: "8px",
             cursor: "pointer",
             fontWeight: 600,
-            transition: "transform 0.2s ease"
+            transition: "transform 0.2s ease",
           }}
-        >Crear Actividad</button>
+        >
+          Crear Actividad
+        </button>
       </form>
     </div>
   );

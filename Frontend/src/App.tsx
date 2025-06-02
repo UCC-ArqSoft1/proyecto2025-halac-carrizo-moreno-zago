@@ -2,9 +2,10 @@ import { BrowserRouter, Routes, Route, Link } from "react-router-dom";
 import CreateActivity from "./CreateActivity";
 import Login from "./Login";
 import Dashboard from "./Dashboard";
-import ActivityDetail from "./pages/ActivityDetail";
+import ActivityDetail from "./pages/ActivityDetail"
+import AdminRoute from "./components/AdminRoute";;
 import MyActivities from "./pages/MyActivities";
-import AdminRoute from "./components/AdminRoute"; // 👈 importalo
+// import AdminRoute from "./components/AdminRoute"; // Opcional, si querés capa extra
 
 function App() {
   return (
@@ -17,14 +18,31 @@ function App() {
       </nav>
       <Routes>
         <Route path="/login" element={<Login />} />
+
         <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/create" element={
-          <AdminRoute>
-            <CreateActivity />
-          </AdminRoute>
-        } />
+
+        {/* 
+          Si querés que SOLO “admin” acceda a /create, podrías envolverlo en un AdminRoute:
+          <Route path="/create" element={
+            <AdminRoute>
+              <CreateActivity />
+            </AdminRoute>
+          } />
+          Pero si manejás el 401 directamente en CreateActivity, 
+          podés dejarlo sin AdminRoute:
+        */}
+        <Route
+    path="/create"
+    element={
+      <AdminRoute>
+        <CreateActivity />
+      </AdminRoute>
+    }
+  />
+
         <Route path="/actividad/:id" element={<ActivityDetail />} />
         <Route path="/mis-actividades" element={<MyActivities />} />
+
         <Route path="*" element={<Login />} />
       </Routes>
     </BrowserRouter>

@@ -1,17 +1,36 @@
 // src/components/AdminRoute.tsx
+import React, { useEffect, useState } from "react";
 import { Navigate } from "react-router-dom";
 
 export default function AdminRoute({ children }: { children: React.ReactNode }) {
-  const token = localStorage.getItem("token");
+  const [status, setStatus] = useState<"pending" | "ok" | "denied">("pending");
 
-  try {
-    if (!token) return <Navigate to="/login" replace />;
+  useEffect(() => {
+    fetch("http://localhost:3000/check-auth", {
+      credentials: "include",
+    })
+      .then(async (res) => {
+        if (res.status === 401 || res.status === 403) {
+          setStatus("denied");
+          return;
+        }
+        const data = await res.json();
+        if (data.role === "admin") {
+          setStatus("ok");
+        } else {
+          setStatus("denied");
+        }
+      })
+      .catch(() => setStatus("denied"));
+  }, []);
 
-    const payload = JSON.parse(atob(token.split(".")[1]));
-    if (payload.role !== "admin") return <Navigate to="/dashboard" replace />;
+  if (status === "pending") {
+    return <div style={{ textAlign: "center", marginTop: "2rem" }}>Cargando...</div>;
+  }
 
-    return <>{children}</>;
-  } catch {
+  if (status === "denied") {
     return <Navigate to="/login" replace />;
   }
+
+  return children;
 }
