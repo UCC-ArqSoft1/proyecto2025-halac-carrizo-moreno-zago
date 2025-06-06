@@ -17,7 +17,11 @@ func GetGym(c *gin.Context) {
 // GetActivityById - Endpoint para obtener una actividad por su ID
 func GetActivityById(c *gin.Context) {
 	id := c.Param("id")
-	activity := services.GetActivityById(id)
+	activity, err := services.GetActivityById(id)
+	if err != nil || activity == nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "Actividad no encontrada"})
+		return
+	}
 	c.JSON(http.StatusOK, activity)
 }
 
@@ -32,8 +36,8 @@ func RegisterForActivity(c *gin.Context) {
 	id := c.Param("id")
 	user := services.GetClientById("client1") // simulación, en producción usar JWT
 
-	activity := services.GetActivityById(id)
-	if activity.ID == "" {
+	activity, err := services.GetActivityById(id)
+	if err != nil || activity == nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "Actividad no encontrada"})
 		return
 	}
@@ -46,8 +50,6 @@ func RegisterForActivity(c *gin.Context) {
 		"user":     user,
 	})
 }
-
-
 
 // AdminCreateActivity - Endpoint para que el administrador cree una actividad
 func AdminCreateActivity(c *gin.Context) {

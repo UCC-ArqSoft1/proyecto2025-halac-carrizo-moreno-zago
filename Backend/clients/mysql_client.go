@@ -29,9 +29,12 @@ func init() {
 		panic(fmt.Sprintf("error connecting to DB: %v", err))
 	}
 
-	DB.AutoMigrate(&dao.User{})
+	// Migramos las tablas user, activity y schedule (ya creado antes)
+	DB.AutoMigrate(&dao.User{}, &dao.Activity{}, &dao.Schedule{})
 }
 
+// GetUserByUsername busca en la tabla users un usuario por username.
+// Devuelve dao.User vacío si no lo encuentra.
 func GetUserByUsername(username string) dao.User {
 	var user dao.User
 	DB.First(&user, "username = ?", username)

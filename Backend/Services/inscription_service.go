@@ -21,9 +21,9 @@ func GetUserInscriptions(userID string) []domain.Activity {
 	var result []domain.Activity
 	for _, insc := range inscriptions {
 		if insc.UserID == userID {
-			activity := GetActivityById(insc.ActivityID)
-			if activity.ID != "" {
-				result = append(result, activity)
+			activity, err := GetActivityById(insc.ActivityID) // <-- cambio aquí
+			if err == nil && activity != nil && activity.ID != "" {
+				result = append(result, *activity)
 			}
 		}
 	}

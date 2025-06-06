@@ -1,6 +1,7 @@
 package main
 
 import (
+	_ "backend/clients" // Para inicializar GORM + migraciones
 	"backend/controllers"
 	"backend/middlewares"
 	"backend/services"
@@ -12,15 +13,16 @@ import (
 )
 
 func main() {
+	services.SeedActivities()
+
 	router := gin.Default()
 
-	// CORS básico que permite cookies desde el front en localhost:5173
 	router.Use(cors.New(cors.Config{
 		AllowOrigins:     []string{"http://localhost:5173"},
 		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
 		AllowHeaders:     []string{"Origin", "Content-Type", "Accept", "Authorization"},
 		ExposeHeaders:    []string{"Content-Length"},
-		AllowCredentials: true,          // imprescindible para que el navegador acepte Set-Cookie
+		AllowCredentials: true,
 		MaxAge:           12 * time.Hour,
 	}))
 
@@ -40,28 +42,27 @@ func main() {
 			return
 		}
 
-		// Creamos la cookie con lo mínimo (sin Domain ni SameSite)
 		cookie := &http.Cookie{
 			Name:     "token",
 			Value:    token,
 			Path:     "/",
 			Expires:  time.Now().Add(24 * time.Hour),
-			HttpOnly: true,  // no accesible desde JS
-			Secure:   false, // en localhost no usamos HTTPS
-			// SameSite por defecto es Lax, que en localhost funciona bien
+			HttpOnly: true,
+			Secure:   false,
 		}
 		http.SetCookie(c.Writer, cookie)
-
 		c.JSON(http.StatusOK, gin.H{"message": "login exitoso"})
 	})
 
 	// Rutas protegidas
 	router.GET("/activities", middlewares.AuthMiddleware("admin", "socio"), controllers.GetActivities)
+	router.GET("/activities/:id", controllers.GetActivityById) // <-- ¡AGREGADO!
 	router.POST("/activities", middlewares.AuthMiddleware("admin"), controllers.AdminCreateActivity)
 	router.GET("/user/activities", middlewares.AuthMiddleware("admin", "socio"), controllers.GetUserActivities)
-	// (agregar aquí cualquier otra ruta con AuthMiddleware...)
+	router.POST("/activities/:id/register", middlewares.AuthMiddleware("admin", "socio"), controllers.RegisterForActivity)
 
-	// Ruta para que el front chequee rol (opcional)
+
+	// Ruta opcional /check-auth
 	router.GET("/check-auth", middlewares.AuthMiddleware("admin", "socio"), func(c *gin.Context) {
 		role := c.GetString("role")
 		c.JSON(http.StatusOK, gin.H{"role": role})

@@ -1,21 +1,42 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import type { Activity } from "./HomePage";
 
 export default function ActivityDetail() {
   const { id } = useParams();
   const [activity, setActivity] = useState<Activity | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string>("");
   const [message, setMessage] = useState("");
+  const navigate = useNavigate();
 
   useEffect(() => {
+    setLoading(true);
+    setError("");
     fetch(`http://localhost:3000/activities/${id}`)
-      .then((res) => res.json())
-      .then((data) => {
-        console.log("🔍 Detalle de actividad:", data);
-        setActivity(data);
+      .then(async (res) => {
+        if (res.status === 404) {
+          setError("Actividad no encontrada");
+          setLoading(false);
+          return;
+        }
+        if (!res.ok) {
+          setError("Error cargando actividad");
+          setLoading(false);
+          return;
+        }
+        const data = await res.json();
+        // Opcional: chequea que data tenga un id
+        if (!data.id) {
+          setError("Actividad no encontrada");
+        } else {
+          setActivity(data);
+        }
+        setLoading(false);
       })
       .catch((err) => {
-        console.error("❌ Error al obtener detalle de actividad:", err);
+        setError("Error de conexión con el servidor.");
+        setLoading(false);
       });
   }, [id]);
 
@@ -24,6 +45,7 @@ export default function ActivityDetail() {
       const res = await fetch(`http://localhost:3000/activities/${id}/register`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+        credentials: "include",
       });
       if (res.ok) {
         setMessage("¡Inscripción exitosa!");
@@ -35,12 +57,20 @@ export default function ActivityDetail() {
     }
   };
 
-  if (!activity) return (
+  if (loading) return (
     <div style={{ display: "grid", placeItems: "center", minHeight: "100vh", fontFamily: "Segoe UI" }}>
       <p>Cargando actividad...</p>
     </div>
   );
 
+  if (error) return (
+    <div style={{ display: "grid", placeItems: "center", minHeight: "100vh", fontFamily: "Segoe UI" }}>
+      <p style={{ color: "red" }}>{error}</p>
+      <button onClick={() => navigate(-1)} style={{ marginTop: "1rem" }}>Volver</button>
+    </div>
+  );
+
+  // activity seguro existe acá
   return (
     <div style={{
       display: "flex",
@@ -60,16 +90,16 @@ export default function ActivityDetail() {
         maxWidth: 500,
         color: "#000"
       }}>
-        <h2 style={{ textAlign: "center", color: "#333" }}>{activity.name}</h2>
-        <p><strong>Intensidad:</strong> {activity.intensity}</p>
-        <p><strong>Duración:</strong> {activity.duration} minutos</p>
-        <p><strong>Entrenador:</strong> {activity.trainer_id}</p>
+        <h2 style={{ textAlign: "center", color: "#333" }}>{activity!.name}</h2>
+        <p><strong>Intensidad:</strong> {activity!.intensity}</p>
+        <p><strong>Duración:</strong> {activity!.duration} minutos</p>
+        <p><strong>Entrenador:</strong> {activity!.trainer_id}</p>
 
-        {activity.schedule.length > 0 ? (
+        {activity!.schedule.length > 0 ? (
           <>
             <p><strong>Horarios:</strong></p>
             <ul>
-              {activity.schedule.map((s, i) => (
+              {activity!.schedule.map((s, i) => (
                 <li key={i}>🕒 {s.day_of_week}: {s.start_time} - {s.end_time}</li>
               ))}
             </ul>
