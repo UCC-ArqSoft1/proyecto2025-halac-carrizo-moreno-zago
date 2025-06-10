@@ -1,4 +1,4 @@
-// src/pages/LoginPage.tsx
+
 
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -17,7 +17,7 @@ export default function LoginPage() {
       const res = await fetch("http://localhost:3000/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        credentials: "include", // ¡muy importante para que guarde la cookie!
+        credentials: "include", 
         body: JSON.stringify({ username, password }),
       });
 
@@ -28,7 +28,7 @@ export default function LoginPage() {
         return;
       }
 
-      // Si llegamos aquí, la cookie “token” ya está almacenada en el navegador
+      
       navigate("/dashboard");
     } catch (err) {
       console.error("Error al loguearse:", err);

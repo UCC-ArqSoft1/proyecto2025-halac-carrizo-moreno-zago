@@ -38,7 +38,7 @@ export default function CreateActivity() {
       const res = await fetch("http://localhost:3000/activities", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        credentials: "include", // <— enviamos la cookie con el JWT
+        credentials: "include", 
         body: JSON.stringify(activity),
       });
 

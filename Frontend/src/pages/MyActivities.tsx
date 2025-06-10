@@ -1,24 +1,19 @@
-// src/pages/MyActivities.tsx
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-type Schedule = {
+type UserActivity = {
+  activity_id: string;
+  name: string;
+  duration: number;
+  intensity: string;
+  trainer_id: string;
   day_of_week: string;
   start_time: string;
   end_time: string;
 };
 
-type Activity = {
-  id: string;
-  name: string;
-  duration: number;
-  intensity: string;
-  trainer_id: string;
-  schedule: Schedule[];
-};
-
 export default function MyActivities() {
-  const [activities, setActivities] = useState<Activity[]>([]);
+  const [activities, setActivities] = useState<UserActivity[]>([]);
   const [error, setError] = useState<string>("");
   const navigate = useNavigate();
 
@@ -28,7 +23,6 @@ export default function MyActivities() {
     })
       .then(async (res) => {
         if (res.status === 401) {
-          // Redirigimos inmediatamente a /login
           navigate("/login");
           return null;
         }
@@ -86,9 +80,9 @@ export default function MyActivities() {
             <em>No estás inscrito en ninguna actividad.</em>
           </p>
         ) : (
-          activities.map((a) => (
+          activities.map((a, i) => (
             <div
-              key={a.id}
+              key={i}
               style={{
                 marginBottom: "1.5rem",
                 borderBottom: "1px solid #ddd",
@@ -104,19 +98,9 @@ export default function MyActivities() {
               <p>
                 <strong>Entrenador:</strong> {a.trainer_id}
               </p>
-              {a.schedule.length > 0 ? (
-                <ul>
-                  {a.schedule.map((s, i) => (
-                    <li key={i}>
-                      🕒 {s.day_of_week}: {s.start_time} - {s.end_time}
-                    </li>
-                  ))}
-                </ul>
-              ) : (
-                <p>
-                  <em>Sin horarios disponibles</em>
-                </p>
-              )}
+              <p>
+                <strong>Inscripto:</strong> {a.day_of_week} de {a.start_time} a {a.end_time}
+              </p>
             </div>
           ))
         )}

@@ -1,7 +1,7 @@
 package main
 
 import (
-	_ "backend/clients" // Para inicializar GORM + migraciones
+	_ "backend/clients" 
 	"backend/controllers"
 	"backend/middlewares"
 	"backend/services"
@@ -55,14 +55,15 @@ func main() {
 	})
 
 	// Rutas protegidas
-	router.GET("/activities", middlewares.AuthMiddleware("admin", "socio"), controllers.GetActivities)
-	router.GET("/activities/:id", controllers.GetActivityById) // <-- ¡AGREGADO!
+	
+	router.GET("/activities/:id", controllers.GetActivityById) 
 	router.POST("/activities", middlewares.AuthMiddleware("admin"), controllers.AdminCreateActivity)
 	router.GET("/user/activities", middlewares.AuthMiddleware("admin", "socio"), controllers.GetUserActivities)
 	router.POST("/activities/:id/register", middlewares.AuthMiddleware("admin", "socio"), controllers.RegisterForActivity)
+	router.GET("/activities", middlewares.AuthMiddleware("admin", "socio"), controllers.GetActivities)
 
 
-	// Ruta opcional /check-auth
+	
 	router.GET("/check-auth", middlewares.AuthMiddleware("admin", "socio"), func(c *gin.Context) {
 		role := c.GetString("role")
 		c.JSON(http.StatusOK, gin.H{"role": role})

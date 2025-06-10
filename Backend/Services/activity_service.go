@@ -6,7 +6,16 @@ import (
     "backend/domain"
 )
 
-// GetActivities consulta la base y retorna TODAS las actividades
+type UserActivityResponse struct {
+    ActivityID string `json:"activity_id"`
+    Name       string `json:"name"`
+    Duration   int    `json:"duration"`
+    Intensity  string `json:"intensity"`
+    TrainerID  string `json:"trainer_id"`
+    DayOfWeek  string `json:"day_of_week"`
+    StartTime  string `json:"start_time"`
+    EndTime    string `json:"end_time"`
+}
 func GetActivities() []domain.Activity {
     var dbActivities []dao.Activity
     clients.DB.Preload("Schedules").Find(&dbActivities)
@@ -32,6 +41,64 @@ func GetActivities() []domain.Activity {
     }
     return activities
 }
+
+// GetActivitiesByName retorna actividades cuyo nombre contiene el fragmento indicado (case-insensitive)
+func GetActivitiesByName(name string) []domain.Activity {
+    var dbActivities []dao.Activity
+    // Usamos ILIKE para que sea case-insensitive si usás Postgres, sino LOWER para MySQL
+    clients.DB.Preload("Schedules").Where("LOWER(name) LIKE ?", "%"+name+"%").Find(&dbActivities)
+
+    var activities []domain.Activity
+    for _, a := range dbActivities {
+        var schedules []domain.Schedule
+        for _, s := range a.Schedules {
+            schedules = append(schedules, domain.Schedule{
+                DayOfWeek: s.DayOfWeek,
+                StartTime: s.StartTime,
+                EndTime:   s.EndTime,
+            })
+        }
+        activities = append(activities, domain.Activity{
+            ID:        a.ID,
+            Name:      a.Name,
+            Duration:  a.Duration,
+            Intensity: a.Intensity,
+            TrainerID: a.TrainerID,
+            Schedule:  schedules,
+        })
+    }
+    return activities
+}
+
+
+// GetActivities consulta la base y retorna TODAS las actividades
+func GetUserInscriptionsDetailed(userID string) []UserActivityResponse {
+    var result []UserActivityResponse
+    for _, insc := range inscriptions {
+        if insc.UserID == userID {
+            activity, err := GetActivityById(insc.ActivityID)
+            if err == nil && activity != nil && activity.ID != "" {
+                // Buscamos el schedule correspondiente al día inscripto
+                for _, s := range activity.Schedule {
+                    if s.DayOfWeek == insc.DayOfWeek {
+                        result = append(result, UserActivityResponse{
+                            ActivityID: activity.ID,
+                            Name:       activity.Name,
+                            Duration:   activity.Duration,
+                            Intensity:  activity.Intensity,
+                            TrainerID:  activity.TrainerID,
+                            DayOfWeek:  s.DayOfWeek,
+                            StartTime:  s.StartTime,
+                            EndTime:    s.EndTime,
+                        })
+                    }
+                }
+            }
+        }
+    }
+    return result
+}
+
 
 // GetActivityById busca una actividad por su ID en la base
 func GetActivityById(id string) (*domain.Activity, error) {

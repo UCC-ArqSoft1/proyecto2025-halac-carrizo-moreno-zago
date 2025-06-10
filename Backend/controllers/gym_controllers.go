@@ -25,31 +25,50 @@ func GetActivityById(c *gin.Context) {
 	c.JSON(http.StatusOK, activity)
 }
 
-// GetActivities - Endpoint para obtener todas las actividades disponibles
-func GetActivities(c *gin.Context) {
-	activities := services.GetActivities()
-	c.JSON(http.StatusOK, activities)
-}
+
 
 // RegisterForActivity - Endpoint para inscribirse en una actividad
 func RegisterForActivity(c *gin.Context) {
-	id := c.Param("id")
-	user := services.GetClientById("client1") // simulación, en producción usar JWT
+    id := c.Param("id")
+    user := services.GetClientById("client1") // simulación, en producción usar JWT
 
-	activity, err := services.GetActivityById(id)
-	if err != nil || activity == nil {
-		c.JSON(http.StatusNotFound, gin.H{"error": "Actividad no encontrada"})
-		return
-	}
+    var req struct {
+        DayOfWeek string `json:"day_of_week"`
+    }
+    if err := c.ShouldBindJSON(&req); err != nil || req.DayOfWeek == "" {
+        c.JSON(http.StatusBadRequest, gin.H{"error": "Debe especificar el día de la semana"})
+        return
+    }
 
-	services.RegisterUserToActivity(user.ID, id)
+    activity, err := services.GetActivityById(id)
+    if err != nil || activity == nil {
+        c.JSON(http.StatusNotFound, gin.H{"error": "Actividad no encontrada"})
+        return
+    }
 
-	c.JSON(http.StatusOK, gin.H{
-		"message":  "Registrado con éxito",
-		"activity": activity,
-		"user":     user,
-	})
+    // Validar que el día elegido exista en la actividad
+    found := false
+    for _, sch := range activity.Schedule {
+        if sch.DayOfWeek == req.DayOfWeek {
+            found = true
+            break
+        }
+    }
+    if !found {
+        c.JSON(http.StatusBadRequest, gin.H{"error": "Día de la semana inválido para esta actividad"})
+        return
+    }
+
+    services.RegisterUserToActivity(user.ID, id, req.DayOfWeek)
+
+    c.JSON(http.StatusOK, gin.H{
+        "message":  "Registrado con éxito",
+        "activity": activity,
+        "user":     user,
+        "day":      req.DayOfWeek,
+    })
 }
+
 
 // AdminCreateActivity - Endpoint para que el administrador cree una actividad
 func AdminCreateActivity(c *gin.Context) {

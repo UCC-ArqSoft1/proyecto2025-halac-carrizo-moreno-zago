@@ -1,4 +1,4 @@
-// src/components/AdminRoute.tsx
+
 import React, { useEffect, useState } from "react";
 import { Navigate } from "react-router-dom";
 

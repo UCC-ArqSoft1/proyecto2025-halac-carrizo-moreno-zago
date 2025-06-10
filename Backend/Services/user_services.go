@@ -11,7 +11,7 @@ import (
 
 var jwtSecret = []byte("mi_clave_secreta_super_segura")
 
-// 👉 Esta función permite acceder al secreto desde otros paquetes (como middlewares)
+
 func JwtSecret() []byte {
 	return jwtSecret
 }

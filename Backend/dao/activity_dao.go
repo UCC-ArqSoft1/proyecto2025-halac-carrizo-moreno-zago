@@ -1,4 +1,4 @@
-// backend/dao/activity_dao.go
+
 package dao
 
 type Activity struct {

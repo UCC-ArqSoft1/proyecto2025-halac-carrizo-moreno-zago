@@ -29,7 +29,7 @@ func init() {
 		panic(fmt.Sprintf("error connecting to DB: %v", err))
 	}
 
-	// Migramos las tablas user, activity y schedule (ya creado antes)
+	
 	DB.AutoMigrate(&dao.User{}, &dao.Activity{}, &dao.Schedule{})
 }
 

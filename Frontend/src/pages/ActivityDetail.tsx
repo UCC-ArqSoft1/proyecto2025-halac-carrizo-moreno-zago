@@ -26,7 +26,6 @@ export default function ActivityDetail() {
           return;
         }
         const data = await res.json();
-        // Opcional: chequea que data tenga un id
         if (!data.id) {
           setError("Actividad no encontrada");
         } else {
@@ -34,25 +33,28 @@ export default function ActivityDetail() {
         }
         setLoading(false);
       })
-      .catch((err) => {
+      .catch(() => {
         setError("Error de conexión con el servidor.");
         setLoading(false);
       });
   }, [id]);
 
-  const handleInscription = async () => {
+  const handleInscription = async (dayOfWeek: string) => {
+    setMessage("");
     try {
       const res = await fetch(`http://localhost:3000/activities/${id}/register`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
+        body: JSON.stringify({ day_of_week: dayOfWeek })
       });
       if (res.ok) {
-        setMessage("¡Inscripción exitosa!");
+        setMessage(`¡Inscripción exitosa para ${dayOfWeek}!`);
       } else {
-        setMessage("Error al inscribirse en la actividad.");
+        const data = await res.json();
+        setMessage(data.error || "Error al inscribirse en la actividad.");
       }
-    } catch (err) {
+    } catch {
       setMessage("Error de conexión con el servidor.");
     }
   };
@@ -70,7 +72,6 @@ export default function ActivityDetail() {
     </div>
   );
 
-  // activity seguro existe acá
   return (
     <div style={{
       display: "flex",
@@ -98,31 +99,32 @@ export default function ActivityDetail() {
         {activity!.schedule.length > 0 ? (
           <>
             <p><strong>Horarios:</strong></p>
-            <ul>
+            <ul style={{ listStyle: "none", padding: 0 }}>
               {activity!.schedule.map((s, i) => (
-                <li key={i}>🕒 {s.day_of_week}: {s.start_time} - {s.end_time}</li>
+                <li key={i} style={{ marginBottom: "1rem" }}>
+                  🕒 {s.day_of_week}: {s.start_time} - {s.end_time}
+                  <button
+                    onClick={() => handleInscription(s.day_of_week)}
+                    style={{
+                      marginLeft: "1rem",
+                      background: "#2193b0",
+                      color: "white",
+                      border: "none",
+                      padding: "0.4rem 1rem",
+                      borderRadius: "8px",
+                      fontWeight: "bold",
+                      cursor: "pointer"
+                    }}
+                  >
+                    Inscribirme a {s.day_of_week}
+                  </button>
+                </li>
               ))}
             </ul>
           </>
         ) : (
           <p><em>Sin horarios disponibles.</em></p>
         )}
-
-        <button
-          onClick={handleInscription}
-          style={{
-            marginTop: "1rem",
-            background: "#2193b0",
-            color: "white",
-            border: "none",
-            padding: "0.7rem 1.2rem",
-            borderRadius: "8px",
-            fontWeight: "bold",
-            cursor: "pointer"
-          }}
-        >
-          Inscribirse
-        </button>
 
         {message && (
           <p style={{

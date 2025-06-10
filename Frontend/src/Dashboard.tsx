@@ -1,4 +1,3 @@
-// src/pages/Dashboard.tsx
 
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -27,7 +26,7 @@ export default function Dashboard() {
 
   useEffect(() => {
     fetch("http://localhost:3000/activities", {
-      credentials: "include", // ← muy importante
+      credentials: "include", 
     })
       .then(async (res) => {
         if (res.status === 401) {

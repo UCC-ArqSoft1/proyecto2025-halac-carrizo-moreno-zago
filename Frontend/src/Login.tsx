@@ -18,7 +18,7 @@ export default function Login() {
       const res = await fetch("http://localhost:3000/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        credentials: "include",          // <— aquí también incluimos las cookies
+        credentials: "include",          
         body: JSON.stringify({ username, password }),
       });
 
@@ -29,8 +29,8 @@ export default function Login() {
         return;
       }
 
-      // Ya guardamos la cookie “token” desde el backend, no usar localStorage.
-      navigate("/dashboard"); // redirigimos a Dashboard
+      
+      navigate("/"); 
     } catch (err) {
       console.error("Error al conectar con el servidor:", err);
       setErrorMsg("Error de conexión con el servidor");

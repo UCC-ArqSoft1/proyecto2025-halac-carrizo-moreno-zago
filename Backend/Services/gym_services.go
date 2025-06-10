@@ -76,7 +76,7 @@ func GetGym() domain.Gym {
 
 // GetPersonById - Obtiene la información de una persona (cliente o entrenador) por su ID
 func GetPersonById(id string) domain.Person {
-	// Este sería un ejemplo simple, pero en una implementación real buscaríamos en una base de datos
+	
 	person := domain.Person{
 		ID:          id,
 		Name:        "Lucía Gómez",
@@ -122,7 +122,7 @@ func GetClientById(id string) domain.Person {
 
 // GetScheduleForActivity - Obtiene el horario para una actividad por su ID
 func GetScheduleForActivity(id string) []domain.Schedule {
-	// Simulación de datos; en una base de datos real, se buscarían los horarios de la actividad
+	
 	schedule := []domain.Schedule{
 		{
 			DayOfWeek: "Monday",
@@ -140,7 +140,6 @@ func GetScheduleForActivity(id string) []domain.Schedule {
 
 // GetActivitiesForTrainer - Obtiene las actividades de un entrenador por su ID
 func GetActivitiesForTrainer(trainerId string) []domain.Activity {
-	// Simulación de datos; se deben recuperar las actividades asociadas al entrenador
 	activities := []domain.Activity{
 		{
 			ID:        "a1",

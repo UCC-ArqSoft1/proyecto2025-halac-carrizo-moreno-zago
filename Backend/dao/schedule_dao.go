@@ -1,4 +1,4 @@
-// backend/dao/schedule_dao.go
+
 package dao
 
 type Schedule struct {

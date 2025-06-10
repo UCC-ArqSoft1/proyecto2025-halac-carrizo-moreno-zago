@@ -1,5 +1,3 @@
-// src/pages/HomePage.tsx
-
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -23,12 +21,16 @@ export default function HomePage() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    fetch("http://localhost:3000/activities", {
-      credentials: "include", // <— para enviar la cookie token
+    // Si hay búsqueda, le agregás el parámetro name
+    const url = search
+      ? `http://localhost:3000/activities?name=${encodeURIComponent(search)}`
+      : "http://localhost:3000/activities";
+
+    fetch(url, {
+      credentials: "include",
     })
       .then(async (res) => {
         if (res.status === 401) {
-          // Si no está logueado, redirigimos al login
           navigate("/login");
           return null;
         }
@@ -47,15 +49,11 @@ export default function HomePage() {
         console.error("Error cargando actividades en HomePage:", err);
         setError(err.message || "Error al cargar actividades");
       });
-  }, [navigate]);
+  }, [navigate, search]); // <-- agregás search como dependencia
 
   if (error) {
     return <div style={{ color: "red", textAlign: "center", marginTop: "2rem" }}>🔴 {error}</div>;
   }
-
-  const filtered = activities.filter((a) =>
-    a.name.toLowerCase().includes(search.toLowerCase())
-  );
 
   return (
     <div style={{ padding: "2rem", fontFamily: "Segoe UI" }}>
@@ -67,7 +65,7 @@ export default function HomePage() {
         onChange={(e) => setSearch(e.target.value)}
         style={{ padding: ".5rem", width: "100%", maxWidth: "300px", marginBottom: "1rem" }}
       />
-      {filtered.map((a) => (
+      {activities.map((a) => (
         <div
           key={a.id}
           style={{

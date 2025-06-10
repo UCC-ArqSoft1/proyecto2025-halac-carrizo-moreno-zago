@@ -39,7 +39,7 @@ type Person struct {
 	Age         int
 	DNI 		string
 	DateOfBirth Date
-	Role        string // "trainer", "client"
+	Role        string // "admin" o "socio" o "trainer"
 	Mail        string
 	Phone       string
 }
@@ -52,6 +52,18 @@ type Date struct {
 
 
 type Inscription struct {
-	UserID     string `json:"user_id"`
-	ActivityID string `json:"activity_id"`
+    UserID     string `json:"user_id"`
+    ActivityID string `json:"activity_id"`
+    DayOfWeek  string `json:"day_of_week"` // "Monday", "Wednesday", etc.
+}
+
+type UserActivityResponse struct {
+    ActivityID string          `json:"activity_id"`
+    Name       string          `json:"name"`
+    Duration   int             `json:"duration"`
+    Intensity  string          `json:"intensity"`
+    TrainerID  string          `json:"trainer_id"`
+    DayOfWeek  string          `json:"day_of_week"`
+    StartTime  string          `json:"start_time"`
+    EndTime    string          `json:"end_time"`
 }

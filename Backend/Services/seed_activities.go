@@ -31,19 +31,19 @@ func SeedActivities() {
                 {DayOfWeek: "Thursday", StartTime: "10:00", EndTime: "10:45"},
             },
         },
-        // Podés agregar más actividades aquí...
+        // Agregar mas actividades aca
     }
 
     for _, a := range activities {
         var existing dao.Activity
-        // Verificar si la actividad ya existe para no duplicar
+        
         err := clients.DB.Preload("Schedules").First(&existing, "id = ?", a.ID).Error
         if err == nil {
             fmt.Printf("⚠️ Actividad %s ya existe. Saltando...\n", a.ID)
             continue
         }
 
-        // Crear la actividad junto con sus schedules (cascada)
+        
         if err := clients.DB.Create(&a).Error; err != nil {
             fmt.Printf("⚠️ Error creando actividad %s: %v\n", a.ID, err)
         } else {
