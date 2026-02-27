@@ -3,32 +3,37 @@ package controllers
 import (
 	"backend/domain"
 	"backend/services"
-	"github.com/gin-gonic/gin"
 	"net/http"
 	"strings"
+
+	"github.com/gin-gonic/gin"
 )
 
 func GetUserActivities(c *gin.Context) {
-    user := services.GetClientById("client1") // en producción: desde JWT
+	userID := c.GetInt("user_id")
+	if userID == 0 {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "No autorizado"})
+		return
+	}
 
-    activities := services.GetUserInscriptionsDetailed(user.ID)
+	activities := services.GetUserInscriptionsDetailed(userID)
 
-    c.JSON(http.StatusOK, gin.H{
-        "user":       user,
-        "activities": activities,
-    })
+	c.JSON(http.StatusOK, gin.H{
+		"user_id":    userID,
+		"activities": activities,
+	})
 }
 
 func GetActivities(c *gin.Context) {
-    name := c.Query("name")
+	name := c.Query("name")
 	var activities []domain.Activity
 
-    if name != "" {
-        // Asegurate de convertir a minúsculas si tu servicio espera eso
-        activities = services.GetActivitiesByName(strings.ToLower(name))
-    } else {
-        activities = services.GetActivities()
-    }
+	if name != "" {
+		// El servicio espera el nombre en minúsculas
+		activities = services.GetActivitiesByName(strings.ToLower(name))
+	} else {
+		activities = services.GetActivities()
+	}
 
-    c.JSON(http.StatusOK, activities)
+	c.JSON(http.StatusOK, activities)
 }

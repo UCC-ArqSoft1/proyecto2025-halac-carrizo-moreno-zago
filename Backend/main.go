@@ -55,8 +55,8 @@ func main() {
 	})
 
 	// Rutas protegidas
-	
-	router.GET("/activities/:id", controllers.GetActivityById) 
+
+	router.GET("/activities/:id", middlewares.AuthMiddleware("admin", "socio"), controllers.GetActivityById)
 	router.POST("/activities", middlewares.AuthMiddleware("admin"), controllers.AdminCreateActivity)
 	router.GET("/user/activities", middlewares.AuthMiddleware("admin", "socio"), controllers.GetUserActivities)
 	router.POST("/activities/:id/register", middlewares.AuthMiddleware("admin", "socio"), controllers.RegisterForActivity)

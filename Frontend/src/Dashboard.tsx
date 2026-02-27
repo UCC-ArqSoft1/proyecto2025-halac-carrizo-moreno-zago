@@ -25,8 +25,13 @@ export default function Dashboard() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    fetch("http://localhost:3000/activities", {
-      credentials: "include", 
+    const url = search
+      ? `http://localhost:3000/activities?name=${encodeURIComponent(search)}`
+      : "http://localhost:3000/activities";
+
+    setLoading(true);
+    fetch(url, {
+      credentials: "include",
     })
       .then(async (res) => {
         if (res.status === 401) {
@@ -52,7 +57,7 @@ export default function Dashboard() {
       .finally(() => {
         setLoading(false);
       });
-  }, [navigate]);
+  }, [navigate, search]);
 
   if (loading) {
     return <div style={{ textAlign: "center", marginTop: "2rem" }}>Cargando...</div>;
@@ -61,10 +66,6 @@ export default function Dashboard() {
   if (error) {
     return <div style={{ color: "red", textAlign: "center", marginTop: "2rem" }}>🔴 {error}</div>;
   }
-
-  const filtered = activities.filter((a) =>
-    a.name.toLowerCase().includes(search.toLowerCase())
-  );
 
   return (
     <div
@@ -105,9 +106,9 @@ export default function Dashboard() {
           }}
         />
 
-        {filtered.length === 0 && <p>No se encontraron actividades.</p>}
+        {activities.length === 0 && <p>No se encontraron actividades.</p>}
 
-        {filtered.map((a) => (
+        {activities.map((a) => (
           <div
             key={a.id}
             style={{

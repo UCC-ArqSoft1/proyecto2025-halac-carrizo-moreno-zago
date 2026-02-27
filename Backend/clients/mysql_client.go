@@ -14,7 +14,7 @@ var (
 
 func init() {
 	user := "gym_admin"
-	password := "admin123"
+	password := "12345678"
 	host := "localhost"
 	port := 3306
 	database := "gym_db"
@@ -29,8 +29,7 @@ func init() {
 		panic(fmt.Sprintf("error connecting to DB: %v", err))
 	}
 
-	
-	DB.AutoMigrate(&dao.User{}, &dao.Activity{}, &dao.Schedule{})
+	DB.AutoMigrate(&dao.User{}, &dao.Activity{}, &dao.Schedule{}, &dao.Inscription{})
 }
 
 // GetUserByUsername busca en la tabla users un usuario por username.

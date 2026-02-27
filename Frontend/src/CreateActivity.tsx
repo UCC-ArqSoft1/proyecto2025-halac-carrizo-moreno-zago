@@ -12,6 +12,7 @@ export default function CreateActivity() {
         day_of_week: "",
         start_time: "",
         end_time: "",
+        capacity: 10,
       },
     ],
   });
@@ -25,8 +26,9 @@ export default function CreateActivity() {
 
   const handleScheduleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
+    const parsedValue = name === "capacity" ? parseInt(value || "0", 10) : value;
     const newSchedule = [...activity.schedule];
-    newSchedule[0] = { ...newSchedule[0], [name]: value };
+    newSchedule[0] = { ...newSchedule[0], [name]: parsedValue };
     setActivity({ ...activity, schedule: newSchedule });
   };
 
@@ -55,7 +57,7 @@ export default function CreateActivity() {
           duration: 0,
           intensity: "",
           trainer_id: "",
-          schedule: [{ day_of_week: "", start_time: "", end_time: "" }],
+          schedule: [{ day_of_week: "", start_time: "", end_time: "", capacity: 10 }],
         });
       } else {
         const errData = await res.json();
@@ -100,6 +102,14 @@ export default function CreateActivity() {
           placeholder="ID"
           value={activity.id}
           onChange={handleChange}
+          required
+        />
+        <input
+          name="capacity"
+          type="number"
+          placeholder="Cupos para este horario"
+          value={activity.schedule[0].capacity}
+          onChange={handleScheduleChange}
           required
         />
         <input

@@ -24,14 +24,14 @@ type Activity struct {
 	Intensity string     `json:"intensity"`
 	TrainerID string     `json:"trainer_id"`
 	Schedule  []Schedule `json:"schedule"`
-  }
-  
+}
 
-  type Schedule struct {
+type Schedule struct {
 	DayOfWeek string `json:"day_of_week"`
 	StartTime string `json:"start_time"`
 	EndTime   string `json:"end_time"`
-  }
+	Capacity  int    `json:"capacity"`
+}
 
 type Person struct {
 	ID          string

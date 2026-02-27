@@ -1,11 +1,9 @@
-
 package dao
 
-type Schedule struct {
+type Inscription struct {
 	ID         uint   `gorm:"primaryKey;autoIncrement"`
+	UserID     int    `gorm:"not null;index"`
 	ActivityID string `gorm:"type:VARCHAR(255);not null;index"`
 	DayOfWeek  string `gorm:"type:VARCHAR(50);not null"`
-	StartTime  string `gorm:"type:VARCHAR(5);not null"`
-	EndTime    string `gorm:"type:VARCHAR(5);not null"`
-	Capacity   int    `gorm:"not null;default:10"`
 }
+

@@ -2,9 +2,10 @@ package middlewares
 
 import (
 	"backend/services"
+	"net/http"
+
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
-	"net/http"
 )
 
 func AuthMiddleware(roles ...string) gin.HandlerFunc {
@@ -29,11 +30,22 @@ func AuthMiddleware(roles ...string) gin.HandlerFunc {
 			return
 		}
 
-		role := claims["role"].(string)
+		role, ok := claims["role"].(string)
+		if !ok {
+			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Token inválido"})
+			return
+		}
+
+		userIDFloat, ok := claims["user_id"].(float64)
+		if !ok {
+			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Token inválido"})
+			return
+		}
+		userID := int(userIDFloat)
 
 		for _, r := range roles {
 			if r == role {
-				c.Set("user_id", claims["user_id"])
+				c.Set("user_id", userID)
 				c.Set("role", role)
 				c.Next()
 				return

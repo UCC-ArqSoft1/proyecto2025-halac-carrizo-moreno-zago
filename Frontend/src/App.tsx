@@ -4,6 +4,7 @@ import Login from "./Login";
 import Dashboard from "./Dashboard";
 import ActivityDetail from "./pages/ActivityDetail";
 import AdminRoute from "./components/AdminRoute";
+import ProtectedRoute from "./components/ProtectedRoute";
 import MyActivities from "./pages/MyActivities";
 import WelcomePage from "./pages/WelcomePage"; 
 
@@ -72,9 +73,23 @@ function App() {
     <BrowserRouter>
       <Navbar />
       <Routes>
-        <Route path="/" element={<WelcomePage />} />
+        <Route
+          path="/"
+          element={
+            <ProtectedRoute>
+              <WelcomePage />
+            </ProtectedRoute>
+          }
+        />
         <Route path="/login" element={<Login />} />
-        <Route path="/dashboard" element={<Dashboard />} />
+        <Route
+          path="/dashboard"
+          element={
+            <ProtectedRoute>
+              <Dashboard />
+            </ProtectedRoute>
+          }
+        />
         <Route
           path="/create"
           element={
@@ -83,8 +98,22 @@ function App() {
             </AdminRoute>
           }
         />
-        <Route path="/actividad/:id" element={<ActivityDetail />} />
-        <Route path="/mis-actividades" element={<MyActivities />} />
+        <Route
+          path="/actividad/:id"
+          element={
+            <ProtectedRoute>
+              <ActivityDetail />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/mis-actividades"
+          element={
+            <ProtectedRoute>
+              <MyActivities />
+            </ProtectedRoute>
+          }
+        />
         <Route path="*" element={<Login />} />
       </Routes>
     </BrowserRouter>

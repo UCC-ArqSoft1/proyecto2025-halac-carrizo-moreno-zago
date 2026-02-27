@@ -1,6 +1,20 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import type { Activity } from "./HomePage";
+
+type Schedule = {
+  day_of_week: string;
+  start_time: string;
+  end_time: string;
+};
+
+type Activity = {
+  id: string;
+  name: string;
+  duration: number;
+  intensity: string;
+  trainer_id: string;
+  schedule: Schedule[];
+};
 
 export default function ActivityDetail() {
   const { id } = useParams();
@@ -13,8 +27,15 @@ export default function ActivityDetail() {
   useEffect(() => {
     setLoading(true);
     setError("");
-    fetch(`http://localhost:3000/activities/${id}`)
+    fetch(`http://localhost:3000/activities/${id}`, {
+      credentials: "include",
+    })
       .then(async (res) => {
+        if (res.status === 401) {
+          setLoading(false);
+          navigate("/login");
+          return;
+        }
         if (res.status === 404) {
           setError("Actividad no encontrada");
           setLoading(false);
